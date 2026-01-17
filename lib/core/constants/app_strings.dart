@@ -29,3 +29,4 @@ class AppStrings {
   static const String ageRequirementNote = 'You must be at least 18 years old to join Vibly.';
 }
 
+ 
