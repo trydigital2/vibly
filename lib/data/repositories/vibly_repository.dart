@@ -193,4 +193,3 @@ final socialPostsProvider =
   return SocialPostsNotifier();
 });
 
- 

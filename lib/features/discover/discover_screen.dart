@@ -174,4 +174,3 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     );
   }
 }
- 

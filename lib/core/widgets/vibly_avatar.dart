@@ -95,4 +95,3 @@ class ViblyAvatar extends StatelessWidget {
   }
 }
 
- 

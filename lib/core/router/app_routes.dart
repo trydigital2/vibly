@@ -11,4 +11,3 @@ class AppRoutes {
   static const String settings = '/settings';
 }
 
- 

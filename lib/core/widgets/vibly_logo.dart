@@ -77,4 +77,3 @@ class ViblyLogo extends StatelessWidget {
   }
 }
 
- 

@@ -81,4 +81,3 @@ class InterestChip extends StatelessWidget {
   }
 }
 
- 

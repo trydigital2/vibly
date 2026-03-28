@@ -280,4 +280,3 @@ class ChatsScreen extends ConsumerWidget {
   }
 }
 
- 

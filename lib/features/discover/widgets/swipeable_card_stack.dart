@@ -564,4 +564,3 @@ class SwipeableCardStackState extends State<SwipeableCardStack>
     );
   }
 }
- 

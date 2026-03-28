@@ -18,4 +18,3 @@ final themeModeProvider =
   return ThemeModeNotifier();
 });
 
- 
