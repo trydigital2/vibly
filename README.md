@@ -35,6 +35,7 @@ A modern, high-performance mobile application engineered with Flutter, Riverpod,
     <tr>
       <td align="center"><b>Explore Feed</b></td>
       <td align="center"><b>Likes Received</b></td>
+        <td align="center"><b>Profile</b></td>
     </tr>
     <tr>
       <td><img src="assets/screenshots/screen_explore.png" width="240" alt="Explore Feed"/></td>
