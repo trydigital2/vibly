@@ -40,7 +40,6 @@ A modern, high-performance mobile application engineered with Flutter, Riverpod,
     <tr>
       <td><img src="assets/screenshots/screen_explore.png" width="240" alt="Explore Feed"/></td>
       <td><img src="assets/screenshots/screen_likes.png" width="240" alt="Likes Grid"/></td>
-      <td><img src="assets/screenshots/screen_chats.png" width="240" alt="Chats"/></td>
     </tr>
     <tr>
       <td align="center"><b>1-on-1 Real-time Chat</b></td>
