@@ -9,6 +9,9 @@ import '../models/user_profile.dart';
 // Current Auth State
 final isAuthenticatedProvider = StateProvider<bool>((ref) => false);
 
+// Active Tab Index Provider
+final selectedTabProvider = StateProvider<int>((ref) => 0);
+
 // Current User Profile State
 final currentUserProvider = StateProvider<UserProfile>((ref) {
   return MockData.currentUser;

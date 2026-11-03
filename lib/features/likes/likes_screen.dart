@@ -117,6 +117,23 @@ class _LikesScreenState extends ConsumerState<LikesScreen> {
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        ref.read(selectedTabProvider.notifier).state = 0;
+                      },
+                      icon: const Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 18),
+                      label: const Text(
+                        'Discover People',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        elevation: 2,
+                      ),
+                    ),
                   ],
                 ),
               )

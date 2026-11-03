@@ -19,8 +19,6 @@ class MainNavigationShell extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
-  int _currentIndex = 0;
-
   final List<Widget> _screens = const [
     DiscoverScreen(),
     ExploreScreen(),
@@ -31,6 +29,7 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
 
   @override
   Widget build(BuildContext context) {
+    final currentIndex = ref.watch(selectedTabProvider);
     final likesCount = ref.watch(likesProvider).length;
     final matches = ref.watch(matchesProvider);
     final unreadChats = matches.fold<int>(0, (sum, m) => sum + m.unreadCount);
@@ -39,7 +38,7 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
     return Scaffold(
       extendBody: true,
       body: IndexedStack(
-        index: _currentIndex,
+        index: currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: SafeArea(
@@ -70,18 +69,21 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
                 children: [
                   _buildNavItem(
                     index: 0,
+                    currentIndex: currentIndex,
                     icon: Icons.local_fire_department_rounded,
                     label: 'Discover',
                     isDark: isDark,
                   ),
                   _buildNavItem(
                     index: 1,
+                    currentIndex: currentIndex,
                     icon: Icons.explore_rounded,
                     label: 'Explore',
                     isDark: isDark,
                   ),
                   _buildNavItem(
                     index: 2,
+                    currentIndex: currentIndex,
                     icon: Icons.favorite_rounded,
                     label: 'Likes',
                     badgeCount: likesCount,
@@ -89,6 +91,7 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
                   ),
                   _buildNavItem(
                     index: 3,
+                    currentIndex: currentIndex,
                     icon: Icons.chat_bubble_rounded,
                     label: 'Chats',
                     badgeCount: unreadChats,
@@ -96,6 +99,7 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
                   ),
                   _buildNavItem(
                     index: 4,
+                    currentIndex: currentIndex,
                     icon: Icons.person_rounded,
                     label: 'Profile',
                     isDark: isDark,
@@ -111,19 +115,18 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
 
   Widget _buildNavItem({
     required int index,
+    required int currentIndex,
     required IconData icon,
     required String label,
     int badgeCount = 0,
     required bool isDark,
   }) {
-    final isSelected = _currentIndex == index;
+    final isSelected = currentIndex == index;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
+        ref.read(selectedTabProvider.notifier).state = index;
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
