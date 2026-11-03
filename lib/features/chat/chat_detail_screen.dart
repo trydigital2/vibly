@@ -22,9 +22,13 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isTyping = false;
+  Timer? _typingStartTimer;
+  Timer? _typingEndTimer;
 
   @override
   void dispose() {
+    _typingStartTimer?.cancel();
+    _typingEndTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -45,11 +49,14 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     ref.read(chatMessagesProvider.notifier).sendMessage(widget.matchId, text);
     _scrollToBottom();
 
+    _typingStartTimer?.cancel();
+    _typingEndTimer?.cancel();
+
     // Show simulated typing indicator after 500ms
-    Timer(const Duration(milliseconds: 500), () {
+    _typingStartTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) setState(() => _isTyping = true);
     });
-    Timer(const Duration(milliseconds: 1500), () {
+    _typingEndTimer = Timer(const Duration(milliseconds: 1500), () {
       if (mounted) {
         setState(() => _isTyping = false);
         _scrollToBottom();
