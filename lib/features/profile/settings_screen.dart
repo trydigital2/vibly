@@ -108,6 +108,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 24),
 
+            // Storage & Performance
+            _buildSectionHeader('Storage & Performance', isDark),
+            _buildNavTile(
+              title: 'Clear Image Cache',
+              icon: Icons.cleaning_services_outlined,
+              isDark: isDark,
+              onTap: () {
+                PaintingBinding.instance.imageCache.clear();
+                PaintingBinding.instance.imageCache.clearLiveImages();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Image cache cleared successfully! ✨'),
+                    backgroundColor: AppColors.accentGreen,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+
             // Support & About
             _buildSectionHeader('Support & Legal', isDark),
             _buildNavTile(
@@ -136,6 +155,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               isDark: isDark,
               onTap: () {},
             ),
+            _buildNavTile(
+              title: 'Open Source Licenses',
+              icon: Icons.article_outlined,
+              isDark: isDark,
+              onTap: () {
+                showLicensePage(
+                  context: context,
+                  applicationName: 'Vibly',
+                  applicationVersion: '1.0.0+1',
+                  applicationLegalese: '© 2026 Vibly Technologies. All rights reserved.',
+                );
+              },
+            ),
 
             const SizedBox(height: 36),
 
@@ -157,7 +189,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 12),
             Center(
               child: Text(
-                'Vibly v1.0.0 • Made with ❤️',
+                'Vibly v1.0.0+1 • Meet people. Find your vibe.',
                 style: AppTypography.labelSmall.copyWith(
                   color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiaryLight,
                 ),
