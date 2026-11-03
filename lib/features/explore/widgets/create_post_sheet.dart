@@ -15,10 +15,17 @@ class CreatePostSheet extends ConsumerStatefulWidget {
 }
 
 class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
+  static const int _maxChars = 280;
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _locationController = TextEditingController(text: 'Brooklyn, NY');
   String? _selectedImageUrl;
   final Set<String> _selectedTags = {'WeekendVibes'};
+
+  @override
+  void initState() {
+    super.initState();
+    _contentController.addListener(() => setState(() {}));
+  }
 
   final List<String> _sampleImages = [
     'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80',
@@ -114,11 +121,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                   ),
                 ),
                 TextButton(
-                  onPressed: _onPublish,
+                  onPressed: _contentController.text.trim().isEmpty ? null : _onPublish,
                   child: Text(
                     'Post',
                     style: AppTypography.labelLarge.copyWith(
-                      color: AppColors.primary,
+                      color: _contentController.text.trim().isEmpty
+                          ? (isDark ? AppColors.textTertiaryDark : AppColors.textTertiaryLight)
+                          : AppColors.primary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -167,6 +176,29 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                   TextField(
                     controller: _contentController,
                     maxLines: 5,
+                    maxLength: _maxChars,
+                    buildCounter: (
+                      context, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) {
+                      final isNearLimit = currentLength > 240;
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          '$currentLength / $maxLength',
+                          style: AppTypography.labelSmall.copyWith(
+                            color: isNearLimit
+                                ? AppColors.error
+                                : (isDark
+                                    ? AppColors.textTertiaryDark
+                                    : AppColors.textTertiaryLight),
+                            fontWeight: isNearLimit ? FontWeight.w700 : FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    },
                     style: AppTypography.bodyLarge.copyWith(
                       color: isDark ? AppColors.white : AppColors.textPrimaryLight,
                     ),
