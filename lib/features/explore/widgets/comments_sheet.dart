@@ -16,13 +16,54 @@ class CommentsSheet extends StatefulWidget {
 
 class _CommentsSheetState extends State<CommentsSheet> {
   final TextEditingController _commentController = TextEditingController();
+  final FocusNode _commentFocusNode = FocusNode();
   final List<CommentItem> _comments = [
+    CommentItem(
+      userName: 'Maya Patel',
+      userAvatar:
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      text: 'The detail on this is insane! Are you showing this at the gallery this Friday? 🎨',
+      timeAgo: '15m ago',
+      likeCount: 6,
+    ),
+    CommentItem(
+      userName: 'Soren Lind',
+      userAvatar:
+          'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
+      text: 'Instant save. Always love seeing your creations pop up on my feed!',
+      timeAgo: '35m ago',
+      likeCount: 3,
+    ),
+    CommentItem(
+      userName: 'Amara Okafor',
+      userAvatar:
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+      text: 'Such warm autumn vibes 🍂 Definitely need to pick up pottery soon.',
+      timeAgo: '1h ago',
+      likeCount: 8,
+    ),
+    CommentItem(
+      userName: 'Julian Rossi',
+      userAvatar:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+      text: 'The glaze reflection in the second photo is pure perfection 📸',
+      timeAgo: '2h ago',
+      likeCount: 2,
+    ),
+    CommentItem(
+      userName: 'Tara Vance',
+      userAvatar:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+      text: 'Can confirm, their craftsmanship in person is even better! ✨',
+      timeAgo: '3h ago',
+      likeCount: 5,
+    ),
     CommentItem(
       userName: 'Chloe Dubois',
       userAvatar:
           'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80',
       text: 'This is absolutely gorgeous! Love the textures 🏺✨',
-      timeAgo: '1h ago',
+      timeAgo: '4h ago',
       likeCount: 4,
     ),
     CommentItem(
@@ -30,7 +71,7 @@ class _CommentsSheetState extends State<CommentsSheet> {
       userAvatar:
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
       text: 'Need one of these mugs for my camp brews!',
-      timeAgo: '45m ago',
+      timeAgo: '5h ago',
       likeCount: 2,
     ),
   ];
@@ -38,7 +79,16 @@ class _CommentsSheetState extends State<CommentsSheet> {
   @override
   void dispose() {
     _commentController.dispose();
+    _commentFocusNode.dispose();
     super.dispose();
+  }
+
+  void _replyTo(String userName) {
+    _commentController.text = '@$userName ';
+    _commentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: _commentController.text.length),
+    );
+    _commentFocusNode.requestFocus();
   }
 
   void _onAddComment() {
@@ -171,6 +221,18 @@ class _CommentsSheetState extends State<CommentsSheet> {
                                     color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                                   ),
                                 ),
+                                const SizedBox(height: 4),
+                                GestureDetector(
+                                  onTap: () => _replyTo(c.userName),
+                                  child: Text(
+                                    'Reply',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      fontSize: 11,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -231,6 +293,7 @@ class _CommentsSheetState extends State<CommentsSheet> {
                   Expanded(
                     child: TextField(
                       controller: _commentController,
+                      focusNode: _commentFocusNode,
                       style: TextStyle(
                         color: isDark ? AppColors.white : AppColors.textPrimaryLight,
                       ),
