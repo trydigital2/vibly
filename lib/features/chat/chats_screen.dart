@@ -9,13 +9,44 @@ import '../../core/widgets/vibly_avatar.dart';
 import '../../data/models/match_item.dart';
 import '../../data/repositories/vibly_repository.dart';
 
-class ChatsScreen extends ConsumerWidget {
+class ChatsScreen extends ConsumerStatefulWidget {
   const ChatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatsScreen> createState() => _ChatsScreenState();
+}
+
+class _ChatsScreenState extends ConsumerState<ChatsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final matches = ref.watch(matchesProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final filteredMatches = _searchQuery.isEmpty
+        ? matches
+        : matches.where((m) {
+            final nameMatch = m.user.name.toLowerCase().contains(_searchQuery);
+            final msgMatch = m.lastMessage.toLowerCase().contains(_searchQuery);
+            return nameMatch || msgMatch;
+          }).toList();
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
@@ -70,95 +101,138 @@ class ChatsScreen extends ConsumerWidget {
               )
             : CustomScrollView(
                 slivers: [
-                  // New Matches Story Row
+                  // Search Bar
                   SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 8, 18, 10),
-                          child: Row(
-                            children: [
-                              Text(
-                                'New Matches',
-                                style: AppTypography.titleMedium.copyWith(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: isDark ? AppColors.white : AppColors.textPrimaryLight,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                decoration: BoxDecoration(
-                                  gradient: AppGradients.primary,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  '${matches.length}',
-                                  style: AppTypography.labelSmall.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ],
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 6, 18, 12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark ? AppColors.borderDark : AppColors.borderLight,
                           ),
                         ),
-                        SizedBox(
-                          height: 106,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: matches.length,
-                            separatorBuilder: (context, index) => const SizedBox(width: 14),
-                            itemBuilder: (context, index) {
-                              final m = matches[index];
-                              return GestureDetector(
-                                onTap: () => context.push('/chat/${m.id}'),
-                                child: Column(
-                                  children: [
-                                    ViblyAvatar(
-                                      imageUrl: m.user.photos.first,
-                                      radius: 30,
-                                      hasStoryRing: true,
-                                      isOnline: m.isOnline,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    SizedBox(
-                                      width: 64,
-                                      child: Text(
-                                        m.user.name.split(' ').first,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppTypography.labelSmall.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: isDark
-                                              ? AppColors.textPrimaryDark
-                                              : AppColors.textPrimaryLight,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                        child: TextField(
+                          controller: _searchController,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? AppColors.white : AppColors.textPrimaryLight,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Search conversations...',
+                            hintStyle: AppTypography.bodySmall.copyWith(
+                              color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiaryLight,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              size: 20,
+                              color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiaryLight,
+                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear_rounded, size: 18),
+                                    onPressed: () => _searchController.clear(),
+                                  )
+                                : null,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  // New Matches Story Row (shown when not searching)
+                  if (_searchQuery.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 4, 18, 10),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'New Matches',
+                                  style: AppTypography.titleMedium.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark ? AppColors.white : AppColors.textPrimaryLight,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    gradient: AppGradients.primary,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '${matches.length}',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 106,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: matches.length,
+                              separatorBuilder: (context, index) => const SizedBox(width: 14),
+                              itemBuilder: (context, index) {
+                                final m = matches[index];
+                                return GestureDetector(
+                                  onTap: () => context.push('/chat/${m.id}'),
+                                  child: Column(
+                                    children: [
+                                      ViblyAvatar(
+                                        imageUrl: m.user.photos.first,
+                                        radius: 30,
+                                        hasStoryRing: true,
+                                        isOnline: m.isOnline,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      SizedBox(
+                                        width: 64,
+                                        child: Text(
+                                          m.user.name.split(' ').first,
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTypography.labelSmall.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: isDark
+                                                ? AppColors.textPrimaryDark
+                                                : AppColors.textPrimaryLight,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
                   // Conversations List Header
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+                      padding: const EdgeInsets.fromLTRB(18, 4, 18, 8),
                       child: Text(
-                        'Recent Chats',
+                        _searchQuery.isEmpty ? 'Recent Chats' : 'Results (${filteredMatches.length})',
                         style: AppTypography.titleMedium.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -168,14 +242,39 @@ class ChatsScreen extends ConsumerWidget {
                     ),
                   ),
 
-                  // Chat Item Rows
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final m = matches[index];
-                        return _buildChatListItem(context, m, isDark);
-                      },
-                      childCount: matches.length,
+                  // Chat Item Rows or Empty Search Result
+                  if (filteredMatches.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 42,
+                              color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiaryLight,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'No chats matching "$_searchQuery"',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final m = filteredMatches[index];
+                          return _buildChatListItem(context, m, isDark);
+                        },
+                        childCount: filteredMatches.length,
+                      ),
                     ),
                   ),
 
