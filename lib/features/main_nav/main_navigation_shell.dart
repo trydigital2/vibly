@@ -144,12 +144,17 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  icon,
-                  size: 24,
-                  color: isSelected
-                      ? AppColors.primary
-                      : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                AnimatedScale(
+                  scale: isSelected ? 1.12 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutBack,
+                  child: Icon(
+                    icon,
+                    size: 24,
+                    color: isSelected
+                        ? AppColors.primary
+                        : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
