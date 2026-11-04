@@ -88,6 +88,24 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     );
   }
 
+  void _onRewind() {
+    ref.read(discoverProfilesProvider.notifier).rewind();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.replay_rounded, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text('Previous profile restored!'),
+          ],
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
   void _onBoost() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -118,6 +136,27 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         title: const ViblyLogo(size: 36, fontSize: 22),
         centerTitle: false,
         actions: [
+          if (profiles.isNotEmpty)
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                  ),
+                ),
+                child: Text(
+                  '${profiles.length} nearby',
+                  style: AppTypography.labelSmall.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  ),
+                ),
+              ),
+            ),
           IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -161,7 +200,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12, top: 4),
                 child: ActionButtonRow(
-                  onRewind: () => ref.read(discoverProfilesProvider.notifier).rewind(),
+                  onRewind: _onRewind,
                   onPass: () => _stackKey.currentState?.swipeLeftProgrammatic(),
                   onSuperLike: () => _stackKey.currentState?.superLikeProgrammatic(),
                   onLike: () => _stackKey.currentState?.swipeRightProgrammatic(),
