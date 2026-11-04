@@ -223,12 +223,28 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                   const SizedBox(height: 20),
 
                   // Sample photo selector
-                  Text(
-                    'Add Photo (Optional)',
-                    style: AppTypography.labelLarge.copyWith(
-                      color: isDark ? AppColors.white : AppColors.textPrimaryLight,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Add Photo (Optional)',
+                        style: AppTypography.labelLarge.copyWith(
+                          color: isDark ? AppColors.white : AppColors.textPrimaryLight,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (_selectedImageUrl != null)
+                        GestureDetector(
+                          onTap: () => setState(() => _selectedImageUrl = null),
+                          child: Text(
+                            'Remove',
+                            style: AppTypography.labelSmall.copyWith(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
